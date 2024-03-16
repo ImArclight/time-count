@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity, TextInput } from 'react-native';
 import dayjs from 'dayjs';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
@@ -8,12 +8,17 @@ const Main = () => {
     const [currentTime, setCurrentTime] = useState(dayjs());
     const [countdownTime, setCountdownTime] = useState(null);
     const [countdownMinutes, setCountdownMinutes] = useState(0);
+    const countdownInputRef = useRef(null); 
 
     const startCountdown = () => {
         const countdownEndTime = dayjs().add(countdownMinutes, 'minute');
         setCountdownTime(countdownEndTime);
+        if (countdownInputRef.current) {
+            countdownInputRef.current.clear(); //Clear the input field after settting the time countdown
+        }
     };
 
+    // countdown time
     const getRemainingTime = () => {
         if (countdownTime) {
             const remainingSeconds = countdownTime.diff(dayjs(), 'second');
@@ -31,7 +36,7 @@ const Main = () => {
         React.useCallback(() => {
             const interval = setInterval(() => {
                 setCurrentTime(dayjs());
-            }, 1000);
+            }, 1000); // for every 1 second, the countdown will decrease
 
             return () => clearInterval(interval);
         }, [])
@@ -42,6 +47,7 @@ const Main = () => {
             <Text style={styles.countdown}>{getRemainingTime()}</Text>
             <View style={styles.countdownInputContainer}>
                 <TextInput
+                    ref={countdownInputRef} 
                     style={styles.countdownInput}
                     keyboardType="numeric"
                     placeholder="Enter minutes"
@@ -54,7 +60,7 @@ const Main = () => {
 };
 
 export default Main;
-
+//styling
 const styles = StyleSheet.create({
     main: {
         justifyContent: 'center',
